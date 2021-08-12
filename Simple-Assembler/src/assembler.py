@@ -54,9 +54,6 @@ def iteration1():
     for line in input_code:
 
         # check the following errors:
-        #     a. Typos in instruction name or register name (1)
-        #     b. Use of undefined variables (1)
-        #     d. Illegal use of FLAGS register (1)
         #     g. Variables not declared at the beginning (1)
         #     h. Missing hlt instruction (1)
         #     i. hlt not being used as the last instruction (1)
@@ -69,7 +66,7 @@ def iteration1():
 
 
 def iteration2():
-    # second iteration error handling (Use of undefined labels)
+    #     a. Typos in instruction name or register name (1 -> 2)
     for line in input_code:
         # send to type specific instruction and append to output if binary
         # if error then clean output, append error and return
@@ -81,6 +78,9 @@ def iteration2():
 # ======================TYPE SPECIFIC INSTRUCTIONS=========================
 
 # Errors to be handled here:
+#     (Use of undefined labels -> type specific)    
+#     b. Use of undefined variables (1 -> type specific)
+#     d. Illegal use of FLAGS register (1 -> type specific)
 #     e. Illegal Immediate values (less than 0 or more than 255) (check in type B instructions)
 #     f. Misuse of labels as variables or vice-versa (type-specific check)
 #     j. Wrong syntax used for instructions (For example, add instruction being used as a
