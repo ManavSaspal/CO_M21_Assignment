@@ -141,9 +141,10 @@ def iteration2():
             return
 
         if instruction == "mov":
-            if(len(input_code[i].split()) < 2 ):
+            if(len(input_code[i].split()) < 3 ):
                 output.clear()
-                output.append("Error in line "+str[i+1]+"invalid syntax for mov instruction")
+                output.append("Error in line "+str(i+1)+" invalid syntax for mov instruction")
+                return
              
             if input_code[i].split()[2][0] == "$":                
                 binary_output = type_B(input_code[i])
