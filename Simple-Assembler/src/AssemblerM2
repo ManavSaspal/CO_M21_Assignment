@@ -113,7 +113,7 @@ def iteration1():
                         + ": hlt not being used as the last instruction"
                     )
                     return
-                if(i == number_of_lines):
+                if(i == number_of_lines  and line[0]!="hlt"):
                     
                     output.clear()
                     output.append(
