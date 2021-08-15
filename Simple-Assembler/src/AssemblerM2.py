@@ -104,8 +104,29 @@ def iteration1():
             count_instructions += 1
             if i < first_instruction:
                 var_address = (
-                    number_of_lines_non_empty - first_instruction_non_empty + 1 + count_instructions
+                    number_of_lines_non_empty
+                    - first_instruction_non_empty
+                    + 1
+                    + count_instructions
                 )
+                if line[1] in variables:
+                    output.clear()
+                    output.append(
+                        "Error in line "
+                        + str(i + 1)
+                        + ": cannot decalre multiple variables with the same name"
+                    )
+                    return
+
+                if line[1] in labels:
+                    output.clear()
+                    output.append(
+                        "Error in line "
+                        + str(i + 1)
+                        + ": cannot decalre variables and labels with the same name"
+                    )
+                    return
+
                 variables[line[1]] = f"{var_address:08b}"
             else:
                 if line[0] == "var":
@@ -120,6 +141,25 @@ def iteration1():
                 if line[0][-1] == ":":
 
                     label_address = count_instructions - first_instruction_non_empty
+
+                    if line[0][0:-1] in labels:
+                        output.clear()
+                        output.append(
+                            "Error in line "
+                            + str(i + 1)
+                            + ": cannot decalre multiple labels with the same name"
+                        )
+                        return
+
+                    if line[0][0:-1] in variables:
+                        output.clear()
+                        output.append(
+                            "Error in line "
+                            + str(i + 1)
+                            + ": cannot decalre labels with the same name as a variable"
+                        )
+                        return
+
                     labels[line[0][0:-1]] = f"{label_address:08b}"
 
                     if (
