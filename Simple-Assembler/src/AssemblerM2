@@ -41,6 +41,8 @@ def input_test():
     global first_instruction
     global number_of_lines
     for inp in sys.stdin:
+        if(len(inp.strip() )==0):
+            continue
         if (not instructions_started) and inp.split(" ")[0] != "var":
             instructions_started = True
             first_instruction= len(input_code)
