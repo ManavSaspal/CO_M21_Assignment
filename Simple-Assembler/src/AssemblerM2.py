@@ -96,61 +96,63 @@ def iteration1():
     # first_instruction -> number_of_lines = all instructions
 
     # first iteration error handling
+    count_instructions = -1
 
     for i in range(number_of_lines + 1):
         line = input_code[i].split()
-
-        if i < first_instruction:
-            var_address = number_of_lines - first_instruction + 1 + i
-            variables[line[1]] = f"{var_address:08b}"
-        else:
-            if line[0] == "var":
-                output.clear()
-                output.append(
-                    "Error in line"
-                    + str(i + 1)
-                    + ": Variables not declared at the beginning"
-                )
-                return
-
-            if line[0][-1] == ":":
-
-                label_address = i - first_instruction
-                labels[line[0][0:-1]] = f"{label_address:08b}"
-
-                if line[1] == "hlt" and i != number_of_lines:
-                    output.clear()
-                    output.append(
-                        "Error in line"
-                        + str(i)
-                        + ": hlt not being used as the last instruction"
-                    )
-                    return
-
-                if i == number_of_lines and line[1] != "hlt":
-                    output.clear()
-                    output.append(
-                        "Error in line" + str(i) + ": Missing hlt instruction"
-                    )
-                    return
-
+        if(line!=[]):
+            count_instructions += 1
+            if i < first_instruction:
+                var_address = number_of_lines_non_empty - first_instruction_non_empty + 1 + i
+                variables[line[1]] = f"{var_address:08b}"
             else:
-                if line[0] == "hlt" and i != number_of_lines:
+                if line[0] == "var":
                     output.clear()
                     output.append(
                         "Error in line"
-                        + str(i)
-                        + ": hlt not being used as the last instruction"
+                        + str(i + 1)
+                        + ": Variables not declared at the beginning"
                     )
                     return
-                if i == number_of_lines and line[0] != "hlt":
 
-                    output.clear()
-                    output.append(
-                        "Error in line" + str(i) + ": Missing hlt instruction"
-                    )
+                if line[0][-1] == ":":
 
-                    return
+                    label_address = count_instructions - first_instruction_non_empty
+                    labels[line[0][0:-1]] = f"{label_address:08b}"
+
+                    if line[1] == "hlt" and i != number_of_lines:
+                        output.clear()
+                        output.append(
+                            "Error in line"
+                            + str(i)
+                            + ": hlt not being used as the last instruction"
+                        )
+                        return
+
+                    if i == number_of_lines and line[1] != "hlt":
+                        output.clear()
+                        output.append(
+                            "Error in line" + str(i) + ": Missing hlt instruction"
+                        )
+                        return
+
+                else:
+                    if line[0] == "hlt" and i != number_of_lines:
+                        output.clear()
+                        output.append(
+                            "Error in line"
+                            + str(i)
+                            + ": hlt not being used as the last instruction"
+                        )
+                        return
+                    if i == number_of_lines and line[0] != "hlt":
+
+                        output.clear()
+                        output.append(
+                            "Error in line" + str(i) + ": Missing hlt instruction"
+                        )
+
+                        return
 
     # check the following errors:
     #     g_Variables not declared at the beginning (1)
