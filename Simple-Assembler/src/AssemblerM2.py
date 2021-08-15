@@ -366,6 +366,8 @@ def type_B(line):
     else:
         return error_registor(inp[1])
     inp[2] = inp[2][1:]
+    if((inp[2]).isnumeric()==False):
+        return(False,"Illegal Immediate Value "+inp[2])
     imm = int(inp[2])
     if imm < 0 or imm > 255:
         return (False, "Illegal Immediate value " + str(imm))
