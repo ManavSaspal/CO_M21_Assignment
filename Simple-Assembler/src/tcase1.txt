@@ -1,6 +1,14 @@
-mov R1 R2
-mov R1 R2
-mov R1 R2
-mov R1 R2
-mov R1 R2
-mov R1 R2
+
+
+
+var x
+
+
+
+st R1 x
+
+
+
+hlt
+
+

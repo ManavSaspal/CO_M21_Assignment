@@ -104,7 +104,7 @@ def iteration1():
             count_instructions += 1
             if i < first_instruction:
                 var_address = (
-                    number_of_lines_non_empty - first_instruction_non_empty + 1 + i
+                    number_of_lines_non_empty - first_instruction_non_empty + 1 + count_instructions
                 )
                 variables[line[1]] = f"{var_address:08b}"
             else:
@@ -426,6 +426,7 @@ def main():
     input_test()
 
     iteration1()
+    # print(variables)
     if len(output) == 0:
         iteration2()
     output_binary()
