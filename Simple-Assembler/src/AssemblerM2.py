@@ -75,7 +75,7 @@ def input_test():
                 first_instruction_non_empty = idx
                 break
             idx += 1
-    
+
     # for debugging
     # print(first_instruction)
     # print(number_of_lines)
@@ -100,16 +100,18 @@ def iteration1():
 
     for i in range(number_of_lines + 1):
         line = input_code[i].split()
-        if(line!=[]):
+        if line != []:
             count_instructions += 1
             if i < first_instruction:
-                var_address = number_of_lines_non_empty - first_instruction_non_empty + 1 + i
+                var_address = (
+                    number_of_lines_non_empty - first_instruction_non_empty + 1 + i
+                )
                 variables[line[1]] = f"{var_address:08b}"
             else:
                 if line[0] == "var":
                     output.clear()
                     output.append(
-                        "Error in line"
+                        "Error in line "
                         + str(i + 1)
                         + ": Variables not declared at the beginning"
                     )
@@ -120,36 +122,46 @@ def iteration1():
                     label_address = count_instructions - first_instruction_non_empty
                     labels[line[0][0:-1]] = f"{label_address:08b}"
 
-                    if line[1] == "hlt" and i != number_of_lines:
+                    if (
+                        line[1] == "hlt"
+                        and count_instructions != number_of_lines_non_empty
+                    ):
                         output.clear()
                         output.append(
-                            "Error in line"
-                            + str(i)
+                            "Error in line "
+                            + str(i + 1)
                             + ": hlt not being used as the last instruction"
                         )
                         return
 
-                    if i == number_of_lines and line[1] != "hlt":
+                    if (
+                        count_instructions == number_of_lines_non_empty
+                        and line[1] != "hlt"
+                    ):
                         output.clear()
                         output.append(
-                            "Error in line" + str(i) + ": Missing hlt instruction"
+                            "Error in line " + str(i + 1) + ": Missing hlt instruction"
                         )
                         return
 
                 else:
-                    if line[0] == "hlt" and i != number_of_lines:
-                        output.clear()
-                        output.append(
-                            "Error in line"
-                            + str(i)
-                            + ": hlt not being used as the last instruction"
-                        )
+                    if line[0] == "hlt":
+                        if count_instructions != number_of_lines_non_empty:
+                            output.clear()
+                            output.append(
+                                "Error in line "
+                                + str(i + 1)
+                                + ": hlt not being used as the last instruction"
+                            )
                         return
-                    if i == number_of_lines and line[0] != "hlt":
+                    if (
+                        count_instructions == number_of_lines_non_empty
+                        and line[0] != "hlt"
+                    ):
 
                         output.clear()
                         output.append(
-                            "Error in line" + str(i) + ": Missing hlt instruction"
+                            "Error in line " + str(i + 1) + ": Missing hlt instruction"
                         )
 
                         return
@@ -169,6 +181,8 @@ def iteration2():
     # if error then clean output, append error and return
 
     for i in range(first_instruction, number_of_lines + 1):
+        if not input_code[i]:
+            continue
 
         if input_code[i].split()[0][-1] == ":":
             newline = ""
@@ -184,12 +198,19 @@ def iteration2():
         if instruction not in bin_encoding.typecodes:
 
             output.clear()
-            output.append(
-                "Error in line"
-                + str(i)
-                + ": There doesn't exist any instruction with name "
-                + instruction
-            )
+            if instruction == "var":
+                output.append(
+                    "Error in line "
+                    + str(i + 1)
+                    + ": Cannot declare variables after labels, expected an instruction"
+                )
+            else:
+                output.append(
+                    "Error in line "
+                    + str(i + 1)
+                    + ": There doesn't exist any instruction with name "
+                    + instruction
+                )
             return
 
         if instruction == "mov":
@@ -405,7 +426,7 @@ def main():
     input_test()
 
     iteration1()
-    if(len(output)==0):
+    if len(output) == 0:
         iteration2()
     output_binary()
 
