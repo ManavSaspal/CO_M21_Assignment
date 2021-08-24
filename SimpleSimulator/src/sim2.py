@@ -1,6 +1,7 @@
 import bin_encoding2
 import sys
-import numpy as np 
+import numpy as np
+
 # import matplotlib.pyplot as plt
 
 
@@ -18,9 +19,19 @@ PC = 0
 def EE(instruction):
     # type of intruction?
     # send to type function
+    # print("here in EE()")
+    # print("instruction", instruction[0:5])
 
     operation = bin_encoding2.opcodes[instruction[0:5]]
-    type = bin_encoding2.typecodes[operation]
+    if operation == "mov":
+        if instruction[0:5] == "00010":
+            type = "B"
+        else:
+            type = "C"
+    else:
+        type = bin_encoding2.typecodes[operation]
+
+    # print("type is ", type)
 
     if type == "A":
 
@@ -50,7 +61,7 @@ def EE(instruction):
 
 def input_memory():
     for line in sys.stdin:
-        if line[-1] == '\n':
+        if line[-1] == "\n":
             memory.append(line[:-1])
         else:
             memory.append(line)
@@ -70,16 +81,20 @@ def getData(PC):
     return memory[PC]
 
 
+def getbin(x):
+    out = bin(x)[2:]
+    out = out[-16:]
+    return "0" * (16 - len(out)) + out
+
+
 def dumpPC():
-    out = str(bin(PC)[-8:])
-    out = ("0" * (16 - len(out))) + out
-    print(out, end=" ")
+    out = bin(PC)[2:][-8:]
+    print("0" * (8 - len(out)) + out, end=" ")
 
 
 def dumpRF():
     for number in registers:
-        out = str(bin(number)[-8:])
-        out = ("0" * (16 - len(out))) + out
+        out = getbin(number)
         print(out, end=" ")
     print()
 
@@ -108,17 +123,17 @@ def type_A(instruction):
 
     if operation == "add":
         registers[reg1] = registers[reg2] + registers[reg3]
-        if(registers[reg1] > 2 ** 8 - 1):
+        if registers[reg1] > 2 ** 8 - 1:
             registers[7] = 4
 
     if operation == "sub":
         registers[reg1] = registers[reg2] - registers[reg3]
-        if(registers[reg3] > registers[reg2]):
+        if registers[reg3] > registers[reg2]:
             registers[7] = 4
 
     if operation == "mul":
         registers[reg1] = registers[reg2] * registers[reg3]
-        if(registers[reg1] > 2 ** 8 - 1):
+        if registers[reg1] > 2 ** 8 - 1:
             registers[7] = 4
 
     if operation == "xor":
@@ -134,6 +149,7 @@ def type_A(instruction):
 
 
 def type_B(instruction):
+    # print("here in type B")
     flag = registers[7]
     reset_flag()
     operation = bin_encoding2.opcodes[instruction[0:5]]
@@ -142,16 +158,18 @@ def type_B(instruction):
     imm = instruction[8:]
     imm = int(imm, 2)
 
+    # print("imm val is", imm)
+
     if operation == "mov":
-       registers[reg] = imm 
-    
+        registers[reg] = imm
+
     if operation == "ls":
-        registers[reg] *= 2**imm
+        registers[reg] *= 2 ** imm
         registers[reg] = f"{registers[reg]:08b}"[-8:]
         registers[reg] = int(registers[reg], 2)
 
     if operation == "ls":
-        registers[reg] *= 2**imm
+        registers[reg] *= 2 ** imm
         registers[reg] = f"{registers[reg]:08b}"[-8:]
         registers[reg] = int(registers[reg], 2)
 
@@ -171,11 +189,11 @@ def type_C(instruction):
         registers[reg1] = registers[reg2]
 
     if operation == "div":
-        registers[0] = registers[reg1]/registers[reg2]
-        registers[1] = registers[reg1]%registers[reg2]
-    
+        registers[0] = registers[reg1] / registers[reg2]
+        registers[1] = registers[reg1] % registers[reg2]
+
     if operation == "not":
-        registers[reg1] = 2**8 - 1 - registers[reg2] 
+        registers[reg1] = 2 ** 8 - 1 - registers[reg2]
 
     if operation == "cmp":
         if reg1 < reg2:
@@ -183,9 +201,9 @@ def type_C(instruction):
         if reg1 > reg2:
             registers[7] = 2
         if reg1 == reg2:
-            registers[7] = 1 
+            registers[7] = 1
 
-    return PC + 1   
+    return PC + 1
 
 
 def type_D(instruction):
@@ -201,9 +219,12 @@ def type_D(instruction):
         registers[reg] = memory[mem]
 
     if operation == "st":
-        memory[mem] = registers[reg]
+        out = bin(registers[reg])[2:]
+        out = "0" * (16 - len(out)) + out
+        memory[mem] = out
 
     return PC + 1
+
 
 def type_E(instruction):
     # update value of memory and register file according to instruction.
@@ -238,27 +259,27 @@ def type_E(instruction):
 def main():
     global memory
     global registers
-    global PC                   # Start from the first instruction
+    global PC  # Start from the first instruction
 
-    input_memory()     # Load memory from stdin
+    input_memory()  # Load memory from stdin
     # print('==========MEMORY LOADED=========')
     # print(memory)
     halted = False
 
     while not halted:
-        print("another iteration")
+        # print("another iteration")
         # Get current instruction
         instruction = getData(PC)
 
         # Update RF compute new_PC
         halted, new_PC = EE(instruction)
-        
+
         # Print PC
         dumpPC()
-        
+
         # Print RF state
         dumpRF()
-        
+
         # Update PC
         updatePC(new_PC)
 

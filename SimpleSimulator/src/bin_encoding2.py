@@ -3,8 +3,8 @@
 opcodes = {
      "00000" : "add",
      "00001" : "sub",
-     "00010" : "mov",  #check overlap
-     "00011" : "mov",#check overlap
+     "00010" : "mov",   #check overlap
+     "00011" : "mov",   #check overlap
      "00100" : "ld",
      "00101" : "st",
      "00110" : "mul",
