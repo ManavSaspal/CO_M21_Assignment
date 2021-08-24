@@ -1,6 +1,7 @@
 import bin_encoding2
 import sys
-import matplotlib.pyplot as plt
+import numpy as np 
+# import matplotlib.pyplot as plt
 
 
 # MEMORY IS BINARY STRING
@@ -70,14 +71,14 @@ def getData(PC):
 
 
 def dumpPC():
-    out = str(bin(PC)[2:])
+    out = str(bin(PC)[-8:])
     out = ("0" * (16 - len(out))) + out
     print(out, end=" ")
 
 
 def dumpRF():
     for number in registers:
-        out = str(bin(number)[2:])
+        out = str(bin(number)[-8:])
         out = ("0" * (16 - len(out))) + out
         print(out, end=" ")
     print()
@@ -97,34 +98,112 @@ def reset_flag():
 def type_A(instruction):
     flag = registers[7]
     reset_flag()
+    operation = bin_encoding2.opcodes[instruction[0:5]]
+    reg1 = instruction[7:10]
+    reg1 = int(reg1, 2)
+    reg2 = instruction[10:13]
+    reg2 = int(reg2, 2)
+    reg3 = instruction[13:]
+    reg3 = int(reg3, 2)
+
+    if operation == "add":
+        registers[reg1] = registers[reg2] + registers[reg3]
+        if(registers[reg1] > 2 ** 8 - 1):
+            registers[7] = 4
+
+    if operation == "sub":
+        registers[reg1] = registers[reg2] - registers[reg3]
+        if(registers[reg3] > registers[reg2]):
+            registers[7] = 4
+
+    if operation == "mul":
+        registers[reg1] = registers[reg2] * registers[reg3]
+        if(registers[reg1] > 2 ** 8 - 1):
+            registers[7] = 4
+
+    if operation == "xor":
+        registers[reg1] = np.bitwise_xor(registers[reg2], registers[reg3])
+
+    if operation == "or":
+        registers[reg1] = np.bitwise_or(registers[reg2], registers[reg3])
+
+    return PC + 1
+
     # update value of memory and register file according to instruction.
     # returns updated pc
-    pass
 
 
 def type_B(instruction):
     flag = registers[7]
     reset_flag()
-    # update value of memory and register file according to instruction.
-    # returns updated pc
-    pass
+    operation = bin_encoding2.opcodes[instruction[0:5]]
+    reg = instruction[5:8]
+    reg = int(reg, 2)
+    imm = instruction[8:]
+    imm = int(imm, 2)
+
+    if operation == "mov":
+       registers[reg] = imm 
+    
+    if operation == "ls":
+        registers[reg] *= 2**imm
+        registers[reg] = f"{registers[reg]:08b}"[-8:]
+        registers[reg] = int(registers[reg], 2)
+
+    if operation == "ls":
+        registers[reg] *= 2**imm
+        registers[reg] = f"{registers[reg]:08b}"[-8:]
+        registers[reg] = int(registers[reg], 2)
+
+    return PC + 1
 
 
 def type_C(instruction):
     flag = registers[7]
     reset_flag()
-    # update value of memory and register file according to instruction.
-    # returns updated pc
-    pass
+    operation = bin_encoding2.opcodes[instruction[0:5]]
+    reg1 = instruction[10:13]
+    reg1 = int(reg1, 2)
+    reg2 = instruction[13:]
+    reg2 = int(reg2, 2)
+
+    if operation == "mov":
+        registers[reg1] = registers[reg2]
+
+    if operation == "div":
+        registers[0] = registers[reg1]/registers[reg2]
+        registers[1] = registers[reg1]%registers[reg2]
+    
+    if operation == "not":
+        registers[reg1] = 2**8 - 1 - registers[reg2] 
+
+    if operation == "cmp":
+        if reg1 < reg2:
+            registers[7] = 3
+        if reg1 > reg2:
+            registers[7] = 2
+        if reg1 == reg2:
+            registers[7] = 1 
+
+    return PC + 1   
 
 
 def type_D(instruction):
     flag = registers[7]
     reset_flag()
-    # update value of memory and register file according to instruction.
-    # returns updated pc
-    pass
+    operation = bin_encoding2.opcodes[instruction[0:5]]
+    reg = instruction[5:8]
+    reg = int(reg, 2)
+    mem = instruction[8:]
+    mem = int(mem, 2)
 
+    if operation == "ld":
+        registers[reg] = memory[mem]
+
+    if operation == "st":
+        memory[mem] = registers[reg]
+
+    return PC + 1
 
 def type_E(instruction):
     # update value of memory and register file according to instruction.
