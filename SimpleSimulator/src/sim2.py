@@ -1,8 +1,7 @@
 import bin_encoding2
 import sys
 import numpy as np
-
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 
 # MEMORY IS BINARY STRING
@@ -14,6 +13,11 @@ registers = [0, 0, 0, 0, 0, 0, 0, 0]
 
 # PROGRAM COUNTER
 PC = 0
+
+# FOR SCATTER PLOT
+cycle = 1
+xs = []
+ys = []
 
 
 def EE(instruction):
@@ -223,6 +227,11 @@ def type_D(instruction):
         out = "0" * (16 - len(out)) + out
         memory[mem] = out
 
+
+    # scatter plot plotting
+    xs.append(mem)
+    ys.append(ys[-1])
+
     return PC + 1
 
 
@@ -260,6 +269,7 @@ def main():
     global memory
     global registers
     global PC  # Start from the first instruction
+    global cycle
 
     input_memory()  # Load memory from stdin
     # print('==========MEMORY LOADED=========')
@@ -268,6 +278,11 @@ def main():
 
     while not halted:
         # print("another iteration")
+
+        # add scatter point
+        xs.append(cycle)
+        ys.append(PC)
+
         # Get current instruction
         instruction = getData(PC)
 
@@ -283,8 +298,15 @@ def main():
         # Update PC
         updatePC(new_PC)
 
+        # Update cycle
+        cycle += 1
+
     # Print memory state
     dumpMEM()
+
+    # Plot scatter plot
+    plt.scatter(xs, ys)
+    plt.show()
 
 
 if __name__ == "__main__":
