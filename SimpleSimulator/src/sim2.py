@@ -127,7 +127,7 @@ def type_A(instruction):
 
     if operation == "add":
         registers[reg1] = registers[reg2] + registers[reg3]
-        if registers[reg1] > 2 ** 8 - 1:
+        if registers[reg1] > 2 ** 16 - 1:
             registers[7] = 4
 
     if operation == "sub":
@@ -137,7 +137,7 @@ def type_A(instruction):
 
     if operation == "mul":
         registers[reg1] = registers[reg2] * registers[reg3]
-        if registers[reg1] > 2 ** 8 - 1:
+        if registers[reg1] > 2 ** 16 - 1:
             registers[7] = 4
 
     if operation == "xor":
@@ -169,12 +169,12 @@ def type_B(instruction):
 
     if operation == "ls":
         registers[reg] *= 2 ** imm
-        registers[reg] = f"{registers[reg]:08b}"[-8:]
+        registers[reg] = f"{registers[reg]:16b}"[-16:]
         registers[reg] = int(registers[reg], 2)
 
     if operation == "ls":
         registers[reg] *= 2 ** imm
-        registers[reg] = f"{registers[reg]:08b}"[-8:]
+        registers[reg] = f"{registers[reg]:16b}"[-16:]
         registers[reg] = int(registers[reg], 2)
 
     return PC + 1
@@ -190,21 +190,24 @@ def type_C(instruction):
     reg2 = int(reg2, 2)
 
     if operation == "mov":
-        registers[reg1] = registers[reg2]
+        if(reg2 == 7):
+            registers[reg1] = flag
+        else:
+            registers[reg1] = registers[reg2]
 
     if operation == "div":
         registers[0] = registers[reg1] / registers[reg2]
         registers[1] = registers[reg1] % registers[reg2]
 
     if operation == "not":
-        registers[reg1] = 2 ** 8 - 1 - registers[reg2]
+        registers[reg1] = 2 ** 16 - 1 - registers[reg2]
 
     if operation == "cmp":
-        if reg1 < reg2:
+        if registers[reg1] > registers[reg2]:
             registers[7] = 3
-        if reg1 > reg2:
+        if registers[reg1] < registers[reg2]:
             registers[7] = 2
-        if reg1 == reg2:
+        if registers[reg1] == registers[reg2]:
             registers[7] = 1
 
     return PC + 1
@@ -220,7 +223,7 @@ def type_D(instruction):
     mem = int(mem, 2)
 
     if operation == "ld":
-        registers[reg] = memory[mem]
+        registers[reg] = int(memory[mem], 2)
 
     if operation == "st":
         out = bin(registers[reg])[2:]
