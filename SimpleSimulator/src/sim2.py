@@ -232,8 +232,8 @@ def type_D(instruction):
 
 
     # scatter plot plotting
-    xs.append(mem)
-    ys.append(ys[-1])
+    xs.append(xs[-1])
+    ys.append(mem)
 
     return PC + 1
 
