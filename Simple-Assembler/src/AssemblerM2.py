@@ -99,112 +99,121 @@ def iteration1():
     count_instructions = -1
 
     for i in range(number_of_lines + 1):
-        line = input_code[i].split()
-        if line != []:
-            count_instructions += 1
-            if i < first_instruction:
-                var_address = (
-                    number_of_lines_non_empty
-                    - first_instruction_non_empty
-                    + 1
-                    + count_instructions
-                )
-                if line[1] in variables:
-                    output.clear()
-                    output.append(
-                        "Error in line "
-                        + str(i + 1)
-                        + ": cannot decalre multiple variables with the same name"
+        try:
+            line = input_code[i].split()
+            if line != []:
+                count_instructions += 1
+                if i < first_instruction:
+                    var_address = (
+                        number_of_lines_non_empty
+                        - first_instruction_non_empty
+                        + 1
+                        + count_instructions
                     )
-                    return
-
-                if line[1] in labels:
-                    output.clear()
-                    output.append(
-                        "Error in line "
-                        + str(i + 1)
-                        + ": cannot decalre variables and labels with the same name"
-                    )
-                    return
-
-                variables[line[1]] = f"{var_address:08b}"
-            else:
-                if line[0] == "var":
-                    output.clear()
-                    output.append(
-                        "Error in line "
-                        + str(i + 1)
-                        + ": Variables not declared at the beginning"
-                    )
-                    return
-
-                if line[0][-1] == ":":
-
-                    label_address = count_instructions - first_instruction_non_empty
-
-                    if line[0][0:-1] in labels:
+                    if line[1] in variables:
                         output.clear()
                         output.append(
                             "Error in line "
                             + str(i + 1)
-                            + ": cannot decalre multiple labels with the same name"
+                            + ": cannot decalre multiple variables with the same name"
                         )
                         return
 
-                    if line[0][0:-1] in variables:
+                    if line[1] in labels:
                         output.clear()
                         output.append(
                             "Error in line "
                             + str(i + 1)
-                            + ": cannot decalre labels with the same name as a variable"
+                            + ": cannot decalre variables and labels with the same name"
                         )
                         return
 
-                    labels[line[0][0:-1]] = f"{label_address:08b}"
-
-                    if (
-                        line[1] == "hlt"
-                        and count_instructions != number_of_lines_non_empty
-                    ):
-                        output.clear()
-                        output.append(
-                            "Error in line "
-                            + str(i + 1)
-                            + ": hlt not being used as the last instruction"
-                        )
-                        return
-
-                    if (
-                        count_instructions == number_of_lines_non_empty
-                        and line[1] != "hlt"
-                    ):
-                        output.clear()
-                        output.append(
-                            "Error in line " + str(i + 1) + ": Missing hlt instruction"
-                        )
-                        return
-
+                    variables[line[1]] = f"{var_address:08b}"
                 else:
-                    if line[0] == "hlt":
-                        if count_instructions != number_of_lines_non_empty:
+                    if line[0] == "var":
+                        output.clear()
+                        output.append(
+                            "Error in line "
+                            + str(i + 1)
+                            + ": Variables not declared at the beginning"
+                        )
+                        return
+
+                    if line[0][-1] == ":":
+
+                        label_address = count_instructions - first_instruction_non_empty
+
+                        if line[0][0:-1] in labels:
+                            output.clear()
+                            output.append(
+                                "Error in line "
+                                + str(i + 1)
+                                + ": cannot decalre multiple labels with the same name"
+                            )
+                            return
+
+                        if line[0][0:-1] in variables:
+                            output.clear()
+                            output.append(
+                                "Error in line "
+                                + str(i + 1)
+                                + ": cannot decalre labels with the same name as a variable"
+                            )
+                            return
+
+                        labels[line[0][0:-1]] = f"{label_address:08b}"
+
+                        if (
+                            line[1] == "hlt"
+                            and count_instructions != number_of_lines_non_empty
+                        ):
                             output.clear()
                             output.append(
                                 "Error in line "
                                 + str(i + 1)
                                 + ": hlt not being used as the last instruction"
                             )
-                        return
-                    if (
-                        count_instructions == number_of_lines_non_empty
-                        and line[0] != "hlt"
-                    ):
+                            return
 
-                        output.clear()
-                        output.append(
-                            "Error in line " + str(i + 1) + ": Missing hlt instruction"
-                        )
+                        if (
+                            count_instructions == number_of_lines_non_empty
+                            and line[1] != "hlt"
+                        ):
+                            output.clear()
+                            output.append(
+                                "Error in line "
+                                + str(i + 1)
+                                + ": Missing hlt instruction"
+                            )
+                            return
 
-                        return
+                    else:
+                        if line[0] == "hlt":
+                            if count_instructions != number_of_lines_non_empty:
+                                output.clear()
+                                output.append(
+                                    "Error in line "
+                                    + str(i + 1)
+                                    + ": hlt not being used as the last instruction"
+                                )
+                            return
+                        if (
+                            count_instructions == number_of_lines_non_empty
+                            and line[0] != "hlt"
+                        ):
+
+                            output.clear()
+                            output.append(
+                                "Error in line "
+                                + str(i + 1)
+                                + ": Missing hlt instruction"
+                            )
+
+                            return
+        except:
+            output.clear()
+            output.append("Error in line " + str(i + 1) + ": Sytax error")
+            return
 
     # check the following errors:
     #     g_Variables not declared at the beginning (1)
@@ -366,8 +375,8 @@ def type_B(line):
     else:
         return error_registor(inp[1])
     inp[2] = inp[2][1:]
-    if((inp[2]).isnumeric()==False):
-        return(False,"Illegal Immediate Value "+inp[2])
+    if (inp[2]).isnumeric() == False:
+        return (False, "Illegal Immediate Value " + inp[2])
     imm = int(inp[2])
     if imm < 0 or imm > 255:
         return (False, "Illegal Immediate value " + str(imm))
