@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # Add command to run your program here
-python3 src/sim2.py
+python3 src/sim3.py
